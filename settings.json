@@ -1,0 +1,14 @@
+{
+  "model": "claude-sonnet-5-5",
+  "maxTokens": 1500,
+  "fromName": "Agent Sheen",
+  "myAddresses": ["agentsheen@icloud.com"],
+  "onlyRecipients": [],
+  "signature": "God love you,\n+ Fulton J. Sheen",
+  "footer": "---\nThis reply was written by an AI in the voice of Archbishop Fulton J. Sheen, drawing on his life and teaching. It is not from Archbishop Sheen or from the Church. For confession, the sacraments, or personal spiritual direction, please reach out to a priest at your local parish.",
+  "includeOriginal": true,
+  "maxRepliesPerSenderPerHour": 10,
+  "maxRepliesPerDay": 60,
+  "skipDomains": [],
+  "skipSenders": []
+}
