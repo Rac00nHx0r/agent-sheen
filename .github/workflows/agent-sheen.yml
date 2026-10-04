@@ -2,7 +2,7 @@ name: Agent Sheen
 
 on:
   schedule:
-    - cron: "*/5 * * * *"        # GitHub treats this as best effort; runs can start several minutes late
+    - cron: "3-58/5 * * * *"      # every 5 min (GitHub's minimum), off the busy :00/:05 marks so runs start sooner
   workflow_dispatch:
     inputs:
       mode:
