@@ -613,7 +613,9 @@ def main(argv=None):
     ap.add_argument("command", choices=["run", "check"])
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--loop", type=int, default=0, help="keep running, polling every N seconds")
+    ap.add_argument("--max-seconds", type=int, default=0, help="with --loop: stop after about this long")
     args = ap.parse_args(argv)
+    started = time.time()
     cfg, settings = get_config(), load_settings()
     if args.command == "check":
         return check(cfg)
@@ -624,6 +626,8 @@ def main(argv=None):
             log(f"FATAL: {type(e).__name__}: {str(e)[:200]}")
             code = 1
         if not args.loop:
+            return code
+        if args.max_seconds and time.time() - started + args.loop >= args.max_seconds:
             return code
         time.sleep(args.loop)
 

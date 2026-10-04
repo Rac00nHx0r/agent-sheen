@@ -18,12 +18,12 @@ concurrency:
 
 permissions:
   contents: read
-  actions: write                  # only used by the keep-alive step at the end
+  actions: write                  # used by the keep-alive and self-restart steps at the end
 
 jobs:
   respond:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 58
     steps:
       - uses: actions/checkout@v4
 
@@ -55,7 +55,7 @@ jobs:
           case "$MODE" in
             check)   python responder.py check ;;
             dry-run) python responder.py run --dry-run ;;
-            *)       python responder.py run ;;
+            *)       python responder.py run --loop 60 --max-seconds 3000 ;;   # poll every minute for ~50 min
           esac
           code=$?
           after=$(cat .state/state.json 2>/dev/null | sha1sum)
@@ -77,3 +77,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/agent-sheen.yml/enable"
+
+      # Chain: start the next run so mail is checked every minute, around the clock.
+      # It queues behind this one (concurrency group). The 5-minute schedule is the backup restart.
+      - name: Start next run
+        if: always() && github.event.inputs.mode != 'check' && github.event.inputs.mode != 'dry-run'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run agent-sheen.yml --repo "${{ github.repository }}" --ref "${{ github.ref_name }}"
